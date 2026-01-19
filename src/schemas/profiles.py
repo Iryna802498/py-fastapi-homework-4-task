@@ -13,12 +13,12 @@ from validation.profile import (
 
 
 class ProfileRequestSchema(BaseModel):
-    first_name: Annotated[Optional[str], AfterValidator(validate_name)] = None
-    last_name: Annotated[Optional[str], AfterValidator(validate_name)] = None
-    gender: Annotated[Optional[str], AfterValidator(validate_gender)] = None
-    date_of_birth: Annotated[Optional[date], AfterValidator(validate_birth_date)] = None
-    info: Annotated[Optional[str], AfterValidator(validate_info)] = None
-    avatar: Annotated[Optional[UploadFile], AfterValidator(validate_image), File()] = None
+    first_name: Annotated[str, AfterValidator(validate_name)]
+    last_name: Annotated[str, AfterValidator(validate_name)]
+    gender: Annotated[str, AfterValidator(validate_gender)]
+    date_of_birth: Annotated[date, AfterValidator(validate_birth_date)]
+    info: Annotated[str, AfterValidator(validate_info)] = None
+    avatar: Annotated[UploadFile, AfterValidator(validate_image), File()]
 
 
 class ProfileResponseSchema(BaseModel):

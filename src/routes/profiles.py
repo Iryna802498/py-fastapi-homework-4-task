@@ -1,3 +1,4 @@
+from datetime import date
 from typing import Annotated
 from fastapi import APIRouter, Depends, Request, HTTPException, File, UploadFile, Form
 from sqlalchemy import select
@@ -52,11 +53,24 @@ async def get_current_user(
 @router.post("/users/{user_id}/profile/", status_code=201)
 async def profile_create(
     user_id: int,
-    profile_data: Annotated[ProfileRequestSchema, Form()],
+    first_name: Annotated[str, Form()],
+    last_name: Annotated[str, Form()],
+    gender: Annotated[str, Form()],
+    date_of_birth: Annotated[date, Form()],
+    info: Annotated[str, Form()],
+    avatar: Annotated[UploadFile, File()],
     current_user: UserModel = Depends(get_current_user),
     s3_client: S3StorageInterface = Depends(get_s3_storage_client),
     db: AsyncSession = Depends(get_db)
 ) -> ProfileResponseSchema:
+    profile_data = ProfileRequestSchema(
+        first_name=first_name,
+        last_name=last_name,
+        gender=gender,
+        date_of_birth=date_of_birth,
+        info=info,
+        avatar=avatar
+    )
     query = select(UserModel).where(
         UserModel.id == user_id
     )
@@ -82,7 +96,7 @@ async def profile_create(
             status_code=400,
             detail="User already has a profile."
         )
-    file_name = f"avatars/{user_id}_avatar.jpg"
+    file_name = f"avatars/{user_id}_avatar.{avatar.filename}"
     file_data = await profile_data.avatar.read()
     try:
         await s3_client.upload_file(
