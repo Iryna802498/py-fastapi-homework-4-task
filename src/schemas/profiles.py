@@ -1,54 +1,24 @@
 from datetime import date
-from typing import Annotated
+from typing import Annotated, Optional
 from fastapi import UploadFile, File
-from pydantic import BaseModel, field_validator, ConfigDict
+from pydantic import BaseModel, ConfigDict, AfterValidator
 
 from validation import (
     validate_name,
     validate_image,
     validate_gender,
-    validate_birth_date
+    validate_birth_date,
+    validate_info
 )
 
 
 class ProfileRequestSchema(BaseModel):
-    first_name: str
-    last_name: str
-    gender: str
-    date_of_birth: date
-    info: str
-    avatar: Annotated[UploadFile, File()]
-
-    @field_validator("first_name")
-    @classmethod
-    def valid_first_name(cls, value: str) -> None:
-        validate_name(name=value)
-
-    @field_validator("last_name")
-    @classmethod
-    def valid_last_name(cls, value: str) -> None:
-        validate_name(name=value)
-
-    @field_validator("gender")
-    @classmethod
-    def valid_gender(cls, value: str) -> None:
-        validate_gender(gender=value)
-
-    @field_validator("date_of_birth")
-    @classmethod
-    def valid_date(cls, value: date) -> None:
-        validate_birth_date(birth_date=value)
-
-    @field_validator("info")
-    @classmethod
-    def valid_info(cls, value: str) -> None:
-        if not value.strip():
-            raise ValueError("Info field cannot be empty or contain only spaces.")
-
-    @field_validator("avatar")
-    @classmethod
-    def valid_avatar(cls, value: UploadFile) -> UploadFile:
-        validate_image(avatar=value)
+    first_name: Annotated[Optional[str], AfterValidator(validate_name)] = None
+    last_name: Annotated[Optional[str], AfterValidator(validate_name)] = None
+    gender: Annotated[Optional[str], AfterValidator(validate_gender)] = None
+    date_of_birth: Annotated[Optional[date], AfterValidator(validate_birth_date)] = None
+    info: Annotated[Optional[str], AfterValidator(validate_info)] = None
+    avatar: Annotated[Optional[UploadFile], AfterValidator(validate_image), File()] = None
 
 
 class ProfileResponseSchema(BaseModel):
