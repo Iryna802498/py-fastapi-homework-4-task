@@ -9,7 +9,7 @@ from database.models.accounts import GenderEnum
 
 
 def validate_name(name: str) -> str:
-    if re.search(r'^[A-Za-z]*$', name) is None:
+    if re.search(r'^[A-Za-z]+$', name) is None:
         raise ValueError(f'{name} contains non-english letters')
     return name.lower()
 
@@ -34,16 +34,23 @@ def validate_image(avatar: UploadFile) -> UploadFile:
 
 
 def validate_gender(gender: str) -> str:
-    if gender not in GenderEnum.__members__.values():
+    if gender not in [g.value for g in GenderEnum]:
         raise ValueError(f"Gender must be one of: {', '.join(g.value for g in GenderEnum)}")
     return gender
+
+def calculate_years(birth_date: date) -> int:
+    today = date.today()
+    age = today.year - birth_date.year
+    if (today.month, today.day) < (birth_date.month, birth_date.day):
+        age -= 1
+    return age
 
 
 def validate_birth_date(birth_date: date) -> date:
     if birth_date.year < 1900:
         raise ValueError('Invalid birth date - year must be greater than 1900.')
 
-    age = (date.today() - birth_date).days // 365
+    age = calculate_years(birth_date=birth_date)
     if age < 18:
         raise ValueError('You must be at least 18 years old to register.')
     return birth_date
