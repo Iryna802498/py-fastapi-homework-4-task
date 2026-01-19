@@ -1,8 +1,11 @@
 from datetime import date
+from typing import Annotated
+from fastapi import UploadFile, File
 from pydantic import BaseModel, field_validator, ConfigDict
 
 from validation import (
     validate_name,
+    validate_image,
     validate_gender,
     validate_birth_date
 )
@@ -14,6 +17,7 @@ class ProfileRequestSchema(BaseModel):
     gender: str
     date_of_birth: date
     info: str
+    avatar: Annotated[UploadFile, File()]
 
     @field_validator("first_name")
     @classmethod
@@ -51,6 +55,14 @@ class ProfileRequestSchema(BaseModel):
         if not value.strip():
             raise ValueError("Info field cannot be empty or contain only spaces.")
         return value
+
+    @field_validator("avatar")
+    @classmethod
+    def valid_avatar(cls, value: UploadFile) -> UploadFile:
+        result = validate_image(
+            avatar=value
+        )
+        return result
 
 
 class ProfileResponseSchema(BaseModel):

@@ -15,13 +15,6 @@ from schemas.profiles import ProfileRequestSchema, ProfileResponseSchema
 router = APIRouter()
 
 
-async def validate_avatar(
-    avatar: UploadFile = File(...)
-) -> UploadFile:
-    result = validate_image(avatar=avatar)
-    return result
-
-
 async def get_current_user(
     request: Request,
     jwt_manager: JWTAuthManagerInterface = Depends(get_jwt_auth_manager),
@@ -44,7 +37,7 @@ async def get_current_user(
         )
     user_id = token_data.get("user_id")
     query = select(UserModel).options(
-        UserModel.group
+        joinedload(UserModel.group)
     ).where(UserModel.id == user_id)
     result = await db.execute(query)
     current_user = result.scalar_one_or_none()
@@ -60,7 +53,6 @@ async def get_current_user(
 async def profile_create(
     user_id: int,
     profile_data: Annotated[ProfileRequestSchema, Form()],
-    avatar: UploadFile = Depends(validate_avatar),
     current_user: UserModel = Depends(get_current_user),
     s3_client: S3StorageInterface = Depends(get_s3_storage_client),
     db: AsyncSession = Depends(get_db)
@@ -91,7 +83,7 @@ async def profile_create(
             detail="User already has a profile."
         )
     file_name = f"avatars/{user_id}_avatar.jpg"
-    file_data = await avatar.read()
+    file_data = await profile_data.avatar.read()
     try:
         await s3_client.upload_file(
             file_name=file_name,
