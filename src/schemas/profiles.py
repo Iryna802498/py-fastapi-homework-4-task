@@ -21,48 +21,34 @@ class ProfileRequestSchema(BaseModel):
 
     @field_validator("first_name")
     @classmethod
-    def valid_first_name(cls, value: str) -> str:
-        result = validate_name(
-            name=value
-        )
-        return result
+    def valid_first_name(cls, value: str) -> None:
+        validate_name(name=value)
 
     @field_validator("last_name")
     @classmethod
-    def valid_last_name(cls, value: str) -> str:
-        result = validate_name(
-            name=value
-        )
-        return result
+    def valid_last_name(cls, value: str) -> None:
+        validate_name(name=value)
 
     @field_validator("gender")
     @classmethod
-    def valid_gender(cls, value: str) -> str:
-        result = validate_gender(gender=value)
-        return result
+    def valid_gender(cls, value: str) -> None:
+        validate_gender(gender=value)
 
     @field_validator("date_of_birth")
     @classmethod
-    def valid_date(cls, value: date) -> date:
-        result = validate_birth_date(
-            birth_date=value
-        )
-        return result
+    def valid_date(cls, value: date) -> None:
+        validate_birth_date(birth_date=value)
 
     @field_validator("info")
     @classmethod
-    def valid_info(cls, value: str) -> str:
+    def valid_info(cls, value: str) -> None:
         if not value.strip():
             raise ValueError("Info field cannot be empty or contain only spaces.")
-        return value
 
     @field_validator("avatar")
     @classmethod
     def valid_avatar(cls, value: UploadFile) -> UploadFile:
-        result = validate_image(
-            avatar=value
-        )
-        return result
+        validate_image(avatar=value)
 
 
 class ProfileResponseSchema(BaseModel):
