@@ -38,6 +38,7 @@ def validate_gender(gender: str) -> str:
         raise ValueError(f"Gender must be one of: {', '.join(g.value for g in GenderEnum)}")
     return gender
 
+
 def calculate_years(birth_date: date) -> int:
     today = date.today()
     age = today.year - birth_date.year
