@@ -133,7 +133,8 @@ async def register_user(
     else:
 
         activation_link = (
-            "http://127.0.0.1:8000/accounts/activate/"
+            f"http://127.0.0.1:8000/api/v1/accounts/"
+            f"activate/{activation_token.token}/"
         )
         background_tasks.add_task(
             email_sender.send_activation_email,
@@ -295,8 +296,8 @@ async def request_password_reset_token(
     await db.commit()
 
     reset_password_complete_url = (
-        "http://127.0.0.1:8000/api/v1/accounts/reset-password/"
-        "complete/"
+        f"http://127.0.0.1:8000/api/v1/accounts/reset-password/"
+        f"complete/{reset_token.token}/"
     )
     background_tasks.add_task(
         email_sender.send_password_reset_email,

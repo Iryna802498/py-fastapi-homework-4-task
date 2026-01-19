@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, Request, HTTPException, File, UploadFile
 from sqlalchemy import select
+from sqlalchemy.orm import joinedload
 from sqlalchemy.ext.asyncio import AsyncSession
 from database import get_db, UserModel, UserProfileModel
 from security.http import get_token
@@ -41,9 +42,9 @@ async def get_current_user(
             detail="Invalid token."
         )
     user_id = token_data.get("user_id")
-    query = select(UserModel).where(
-        UserModel.id == user_id
-    )
+    query = select(UserModel).options(
+        UserModel.group
+    ).where(UserModel.id == user_id)
     result = await db.execute(query)
     current_user = result.scalar_one_or_none()
     if not current_user or not current_user.is_active:
@@ -118,12 +119,5 @@ async def profile_create(
     await db.commit()
     await db.refresh(profile)
     return ProfileResponseSchema.model_validate(
-        id=profile.id,
-        user_id=user.id,
-        first_name=profile.first_name,
-        last_name=profile.last_name,
-        gender=profile.gender,
-        date_of_birth=profile.date_of_birth,
-        info=profile.info,
-        avatar=profile.avatar
+        profile
     )
