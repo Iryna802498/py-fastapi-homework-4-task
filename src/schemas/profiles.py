@@ -49,7 +49,7 @@ class ProfileRequestSchema(BaseModel):
     @field_validator("info")
     @classmethod
     def valid_info(cls, value: str) -> str:
-        if value is None or value is "   ":
+        if not value or value == "   ":
             raise ValueError("Info field cannot be empty or contain only spaces.")
         return value
 
