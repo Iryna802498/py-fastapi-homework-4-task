@@ -1,5 +1,4 @@
 from datetime import date
-from fastapi import Form
 from pydantic import BaseModel, field_validator, ConfigDict
 
 from validation import (
@@ -52,23 +51,6 @@ class ProfileRequestSchema(BaseModel):
         if not value.strip():
             raise ValueError("Info field cannot be empty or contain only spaces.")
         return value
-
-    @classmethod
-    def as_form(
-        cls,
-        first_name: str = Form(...),
-        last_name: str = Form(...),
-        gender: str = Form(...),
-        date_of_birth: date = Form(...),
-        info: str = Form(...)
-    ):
-        return cls(
-            first_name=first_name,
-            last_name=last_name,
-            gender=gender,
-            date_of_birth=date_of_birth,
-            info=info
-        )
 
 
 class ProfileResponseSchema(BaseModel):
