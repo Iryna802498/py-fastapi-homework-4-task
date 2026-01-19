@@ -118,11 +118,18 @@ async def profile_create(
         gender=profile_data.gender,
         date_of_birth=profile_data.date_of_birth,
         info=profile_data.info,
-        avatar=avatar_url
+        avatar=file_name
     )
     db.add(profile)
     await db.commit()
     await db.refresh(profile)
-    return ProfileResponseSchema.model_validate(
-        profile
+    return ProfileResponseSchema(
+        id=profile.id,
+        user_id=user.id,
+        first_name=profile.first_name,
+        last_name=profile.last_name,
+        gender=profile.gender,
+        date_of_birth=profile.date_of_birth,
+        info=profile.info,
+        avatar=avatar_url
     )
