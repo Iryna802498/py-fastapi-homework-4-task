@@ -10,7 +10,6 @@ from security.interfaces import JWTAuthManagerInterface
 from storages.interfaces import S3StorageInterface
 from config import get_jwt_auth_manager, get_s3_storage_client
 from exceptions.security import TokenExpiredError, InvalidTokenError
-from validation.profile import validate_image
 from schemas.profiles import ProfileRequestSchema, ProfileResponseSchema
 
 router = APIRouter()

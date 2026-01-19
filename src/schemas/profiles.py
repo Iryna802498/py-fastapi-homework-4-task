@@ -17,7 +17,7 @@ class ProfileRequestSchema(BaseModel):
     last_name: Annotated[str, AfterValidator(validate_name)]
     gender: Annotated[str, AfterValidator(validate_gender)]
     date_of_birth: Annotated[date, AfterValidator(validate_birth_date)]
-    info: Annotated[str, AfterValidator(validate_info)] = None
+    info: Annotated[str, AfterValidator(validate_info)]
     avatar: Annotated[UploadFile, AfterValidator(validate_image), File()]
 
 
