@@ -3,7 +3,7 @@ from typing import Annotated, Optional
 from fastapi import UploadFile, File
 from pydantic import BaseModel, ConfigDict, AfterValidator
 
-from validation import (
+from validation.profile import (
     validate_name,
     validate_image,
     validate_gender,
