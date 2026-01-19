@@ -9,7 +9,7 @@ from database.models.accounts import GenderEnum
 
 
 def validate_name(name: str) -> str:
-    if re.search(r'^[A-Za-z]+$', name) is None:
+    if re.fullmatch(r'[A-Za-z]+', name) is None:
         raise ValueError(f'{name} contains non-english letters')
     return name.lower()
 
