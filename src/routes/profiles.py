@@ -52,7 +52,10 @@ async def get_current_user(
 @router.post("/users/{user_id}/profile/", status_code=201)
 async def profile_create(
     user_id: int,
-    profile_data: Annotated[ProfileRequestSchema, Form()],
+    profile_data: Annotated[
+        ProfileRequestSchema,
+        Depends(ProfileRequestSchema.as_form)
+    ],
     current_user: UserModel = Depends(get_current_user),
     s3_client: S3StorageInterface = Depends(get_s3_storage_client),
     db: AsyncSession = Depends(get_db)
