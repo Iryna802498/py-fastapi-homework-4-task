@@ -86,11 +86,8 @@ async def profile_create(
             status_code=400,
             detail="User already has a profile."
         )
-    avatar = validate_image(
-        avatar=profile_data.avatar
-    )
-    file_name = f"avatars/{user_id}_{avatar.filename}"
-    file_data = await avatar.read()
+    file_name = f"avatars/{user_id}_{profile_data.avatar.filename}"
+    file_data = await profile_data.avatar.read()
     try:
         await s3_client.upload_file(
             file_name=file_name,

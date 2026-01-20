@@ -1,10 +1,10 @@
 from datetime import date
-from typing import Annotated
 from fastapi import UploadFile, Form, File
-from pydantic import BaseModel, ConfigDict, AfterValidator
+from pydantic import BaseModel, ConfigDict
 
 from validation.profile import (
     validate_name,
+    validate_image,
     validate_gender,
     validate_birth_date,
     validate_info
@@ -12,11 +12,11 @@ from validation.profile import (
 
 
 class ProfileRequestSchema(BaseModel):
-    first_name: Annotated[str, AfterValidator(validate_name)]
-    last_name: Annotated[str, AfterValidator(validate_name)]
-    gender: Annotated[str, AfterValidator(validate_gender)]
-    date_of_birth: Annotated[date, AfterValidator(validate_birth_date)]
-    info: Annotated[str, AfterValidator(validate_info)]
+    first_name: str
+    last_name: str
+    gender: str
+    date_of_birth: date
+    info: str
     avatar: UploadFile
 
     @classmethod
@@ -30,12 +30,12 @@ class ProfileRequestSchema(BaseModel):
         avatar: UploadFile = File(...)
     ):
         return cls(
-            first_name=first_name,
-            last_name=last_name,
-            gender=gender,
-            date_of_birth=date_of_birth,
-            info=info,
-            avatar=avatar
+            first_name=validate_name(first_name),
+            last_name=validate_name(last_name),
+            gender=validate_gender(gender),
+            date_of_birth=validate_birth_date(date_of_birth),
+            info=validate_info(info),
+            avatar=validate_image(avatar)
         )
 
 
