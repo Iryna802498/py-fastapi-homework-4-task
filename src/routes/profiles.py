@@ -52,24 +52,11 @@ async def get_current_user(
 @router.post("/users/{user_id}/profile/", status_code=201)
 async def profile_create(
     user_id: int,
-    first_name: Annotated[str, Form()],
-    last_name: Annotated[str, Form()],
-    gender: Annotated[str, Form()],
-    date_of_birth: Annotated[date, Form()],
-    info: Annotated[str, Form()],
-    avatar: Annotated[UploadFile, File()],
+    profile_data: Annotated[ProfileRequestSchema, Form()],
     current_user: UserModel = Depends(get_current_user),
     s3_client: S3StorageInterface = Depends(get_s3_storage_client),
     db: AsyncSession = Depends(get_db)
 ) -> ProfileResponseSchema:
-    profile_data = ProfileRequestSchema(
-        first_name=first_name,
-        last_name=last_name,
-        gender=gender,
-        date_of_birth=date_of_birth,
-        info=info,
-        avatar=avatar
-    )
     query = select(UserModel).where(
         UserModel.id == user_id
     )
@@ -95,7 +82,7 @@ async def profile_create(
             status_code=400,
             detail="User already has a profile."
         )
-    file_name = f"avatars/{user_id}_{avatar.filename}"
+    file_name = f"avatars/{user_id}_{profile_data.avatar.filename}"
     file_data = await profile_data.avatar.read()
     try:
         await s3_client.upload_file(
