@@ -1,6 +1,6 @@
 from datetime import date
 from typing import Annotated
-from fastapi import APIRouter, Depends, Request, HTTPException, File, UploadFile, Form
+from fastapi import APIRouter, Depends, Request, HTTPException
 from sqlalchemy import select
 from sqlalchemy.orm import joinedload
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -11,6 +11,7 @@ from storages.interfaces import S3StorageInterface
 from config import get_jwt_auth_manager, get_s3_storage_client
 from exceptions.security import TokenExpiredError, InvalidTokenError
 from schemas.profiles import ProfileRequestSchema, ProfileResponseSchema
+from validation.profile import validate_image
 
 router = APIRouter()
 
@@ -85,8 +86,11 @@ async def profile_create(
             status_code=400,
             detail="User already has a profile."
         )
-    file_name = f"avatars/{user_id}_{profile_data.avatar.filename}"
-    file_data = await profile_data.avatar.read()
+    avatar = validate_image(
+        avatar=profile_data.avatar
+    )
+    file_name = f"avatars/{user_id}_{avatar.filename}"
+    file_data = await avatar.read()
     try:
         await s3_client.upload_file(
             file_name=file_name,

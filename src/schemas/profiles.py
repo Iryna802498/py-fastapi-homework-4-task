@@ -5,7 +5,6 @@ from pydantic import BaseModel, ConfigDict, AfterValidator
 
 from validation.profile import (
     validate_name,
-    validate_image,
     validate_gender,
     validate_birth_date,
     validate_info
@@ -18,7 +17,7 @@ class ProfileRequestSchema(BaseModel):
     gender: Annotated[str, AfterValidator(validate_gender)]
     date_of_birth: Annotated[date, AfterValidator(validate_birth_date)]
     info: Annotated[str, AfterValidator(validate_info)]
-    avatar: Annotated[UploadFile, AfterValidator(validate_image)]
+    avatar: UploadFile
 
     @classmethod
     def as_form(

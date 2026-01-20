@@ -24,12 +24,13 @@ def validate_image(avatar: UploadFile) -> UploadFile:
 
     try:
         image = Image.open(BytesIO(contents))
-        avatar.file.seek(0)
         image_format = image.format
         if image_format not in supported_image_formats:
             raise ValueError(f"Unsupported image format: {image_format}. Use one of next: {supported_image_formats}")
     except IOError:
         raise ValueError("Invalid image format")
+    finally:
+        avatar.file.seek(0)
     return avatar
 
 
