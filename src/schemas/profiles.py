@@ -1,5 +1,5 @@
 from datetime import date
-from fastapi import UploadFile, Form, File
+from fastapi import UploadFile, Form, File, HTTPException
 from pydantic import BaseModel, ConfigDict
 
 from validation.profile import (
@@ -29,12 +29,18 @@ class ProfileRequestSchema(BaseModel):
         info: str = Form(...),
         avatar: UploadFile = File(...)
     ):
-        first_name = validate_name(name=first_name)
-        last_name = validate_name(name=last_name)
-        gender = validate_gender(gender=gender)
-        date_of_birth = validate_birth_date(birth_date=date_of_birth)
-        info = validate_info(info=info)
-        avatar = validate_image(avatar=avatar)
+        try:
+            first_name = validate_name(name=first_name)
+            last_name = validate_name(name=last_name)
+            gender = validate_gender(gender=gender)
+            date_of_birth = validate_birth_date(birth_date=date_of_birth)
+            info = validate_info(info=info)
+            avatar = validate_image(avatar=avatar)
+        except ValueError as e:
+            raise HTTPException(
+                status_code=422,
+                detail=str(e)
+            )
         return cls(
             first_name=first_name,
             last_name=last_name,
