@@ -29,13 +29,19 @@ class ProfileRequestSchema(BaseModel):
         info: str = Form(...),
         avatar: UploadFile = File(...)
     ):
+        validate_name(name=first_name)
+        validate_name(name=last_name)
+        validate_gender(gender=gender)
+        validate_birth_date(birth_date=date_of_birth)
+        validate_info(info=info)
+        validate_image(avatar=avatar)
         return cls(
-            first_name=validate_name(first_name),
-            last_name=validate_name(last_name),
-            gender=validate_gender(gender),
-            date_of_birth=validate_birth_date(date_of_birth),
-            info=validate_info(info),
-            avatar=validate_image(avatar)
+            first_name=first_name,
+            last_name=last_name,
+            gender=gender,
+            date_of_birth=date_of_birth,
+            info=info,
+            avatar=avatar
         )
 
 
